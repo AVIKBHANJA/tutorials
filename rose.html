@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Rose Animation</title>
+    <style>
+        /* Body styles */
+      
+
+        /* Canvas container */
+        .canvas {
+            position: relative;
+            width: 300px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            perspective: 1000px;
+        }
+
+        /* Stem styling */
+        .stem {
+            position: absolute;
+            bottom: 0;
+            width: 14px;
+            height: 250px;
+            background: linear-gradient(to bottom, #32a852, #006400);
+            border-radius: 7px;
+            animation: growStem 2.5s ease-in-out forwards;
+            z-index: 1;
+        }
+
+        /* Petal base styles */
+        .petal {
+            position: absolute;
+            width: 90px;
+            height: 110px;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #c0392b);
+            border-radius: 50% 50% 0 0;
+            transform: scale(0) rotate(0deg);
+            opacity: 0;
+            animation: bloomPetal 3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+            z-index: 2;
+        }
+
+        /* Petal positions */
+        .petal1 {
+            top: 100px;
+            left: 50%;
+            transform-origin: bottom center;
+            margin-left: -45px;
+            animation-delay: 2s;
+            transform: rotate(-45deg);
+        }
+
+        .petal2 {
+            top: 100px;
+            left: 50%;
+            transform-origin: bottom right;
+            margin-left: -105px;
+            animation-delay: 2.3s;
+            transform: rotate(45deg);
+        }
+
+        .petal3 {
+            top: 100px;
+            left: 50%;
+            transform-origin: bottom left;
+            margin-left: 15px;
+            animation-delay: 2.6s;
+            transform: rotate(-135deg);
+        }
+
+        .petal4 {
+            top: 160px;
+            left: 50%;
+            transform-origin: bottom right;
+            margin-left: -75px;
+            animation-delay: 2.9s;
+            transform: rotate(135deg);
+        }
+
+        .petal5 {
+            top: 160px;
+            left: 50%;
+            transform-origin: bottom left;
+            margin-left: -15px;
+            animation-delay: 3.2s;
+            transform: rotate(-225deg);
+        }
+
+        /* Leaf base styles */
+        .leaf {
+            position: absolute;
+            width: 70px;
+            height: 35px;
+            background: radial-gradient(circle, #32CD32, #228B22);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            animation: growLeaf 2.5s ease-in-out forwards;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            z-index: 1;
+        }
+
+        /* Leaf positions */
+        .leaf1 {
+            bottom: 100px;
+            left: -40px;
+            transform-origin: center center;
+            transform: rotate(-45deg);
+            animation-delay: 3.5s;
+        }
+
+        .leaf2 {
+            bottom: 100px;
+            right: -40px;
+            transform-origin: center left;
+            transform: rotate(45deg);
+            animation-delay: 3.8s;
+        }
+
+        /* Animations */
+        @keyframes growStem {
+            0% {
+                height: 0;
+            }
+            100% {
+                height: 250px;
+            }
+        }
+
+        @keyframes bloomPetal {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes growLeaf {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .canvas {
+            position: relative;
+            width: 300px;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            perspective: 1000px;
+        }
+
+        .proposal-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 100;
+            opacity: 1; /* Changed from 0 to 1 */
+            transition: opacity 1s ease;
+            pointer-events: none;
+            width: 100%;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .proposal-text h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            opacity: 1; /* Ensure full opacity */
+        }
+
+        .proposal-text p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 1; /* Ensure full opacity */
+        }
+
+        /* Rest of the previous CSS remains the same */
+        .stem {
+            position: absolute;
+            bottom: 0;
+            width: 14px;
+            height: 250px;
+            background: linear-gradient(to bottom, #32a852, #006400);
+            border-radius: 7px;
+            animation: growStem 2.5s ease-in-out forwards;
+            z-index: 1;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="canvas">
+        <div class="proposal-text">
+            <h1>I Love You</h1>
+            <p>Will you make me the happiest person alive?</p>
+        </div>
+        <div class="stem"></div>
+        <div class="petal petal1"></div>
+        <div class="petal petal2"></div>
+        <div class="petal petal3"></div>
+        <div class="petal petal4"></div>
+        <div class="petal petal5"></div>
+        <div class="leaf leaf1"></div>
+        <div class="leaf leaf2"></div>
+    </div>
+</body>
+</html>

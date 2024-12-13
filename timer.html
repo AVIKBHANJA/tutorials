@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sand Timer</title>
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    background: #2a2a2a;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+h1 {
+    color: #fff;
+    margin-bottom: 2rem;
+}
+
+.timer-input {
+    margin-bottom: 2rem;
+}
+
+input {
+    padding: 0.8rem;
+    margin: 0 0.5rem;
+    width: 100px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    background: #333;
+    color: #fff;
+    text-align: center;
+}
+
+input:focus {
+    outline: 2px solid #4CAF50;
+    background: #444;
+}
+
+button {
+    padding: 0.8rem 1.5rem;
+    margin: 0 0.5rem;
+    border: none;
+    border-radius: 8px;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 1rem;
+}
+
+button:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+}
+
+button:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#resetTimer {
+    background: #f44336;
+}
+
+#resetTimer:hover {
+    background: #da190b;
+}
+
+.timer-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.time-left {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.hourglass {
+    width: 140px;
+    height: 200px;
+    position: relative;
+    margin: 20px auto;
+}
+
+.top-section, .bottom-section {
+    width: 140px;
+    height: 70px;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 70px 70px 5px 5px;
+    border: 3px solid #4CAF50;
+}
+
+.bottom-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px 5px 70px 70px;
+    border: 3px solid #4CAF50;
+}
+
+.middle-section {
+    width: 30px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    border-left: 3px solid #4CAF50;
+    border-right: 3px solid #4CAF50;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.top-sand, .bottom-sand {
+    width: 100%;
+    background: #f4d03f;
+    position: absolute;
+    border-radius: inherit;
+    transition: height 0.1s linear;
+}
+
+.top-sand {
+    bottom: 0;
+    height: 100%;
+}
+
+.bottom-sand {
+    bottom: 0;
+    height: 0%;
+}
+
+.sand-stream {
+    width: 12px;
+    background: #f4d03f;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 0;
+    opacity: 0;
+}
+
+/* Animation classes */
+.sand-falling .sand-stream {
+    opacity: 1;
+    height: 100%;
+    animation: streamSand 0.1s linear infinite;
+}
+
+.sand-falling .top-sand {
+    animation: emptySand var(--duration) linear forwards;
+}
+
+.sand-falling .bottom-sand {
+    animation: fillSand var(--duration) linear forwards;
+}
+
+@keyframes streamSand {
+    0% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes emptySand {
+    from {
+        height: 100%;
+    }
+    to {
+        height: 0%;
+    }
+}
+
+@keyframes fillSand {
+    from {
+        height: 0%;
+    }
+    to {
+        height: 100%;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sand Timer</h1>
+        <div class="timer-input">
+            <input type="number" id="minutes" placeholder="Minutes" min="0">
+            <input type="number" id="seconds" placeholder="Seconds" min="0" max="59">
+            <button id="startTimer">Start Timer</button>
+            <button id="resetTimer">Reset</button>
+        </div>
+        <div class="timer-display">
+            <div class="hourglass">
+                <div class="top-section">
+                    <div class="top-sand"></div>
+                </div>
+                <div class="middle-section">
+                    <div class="sand-stream"></div>
+                </div>
+                <div class="bottom-section">
+                    <div class="bottom-sand"></div>
+                </div>
+            </div>
+            <div class="time-left">00:00</div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const minutesInput = document.getElementById('minutes');
+    const secondsInput = document.getElementById('seconds');
+    const startButton = document.getElementById('startTimer');
+    const resetButton = document.getElementById('resetTimer');
+    const timeLeft = document.querySelector('.time-left');
+    const hourglass = document.querySelector('.hourglass');
+    
+    let countdown;
+    let totalSeconds = 0;
+    let isRunning = false;
+
+    function validateInput() {
+        const minutes = parseInt(minutesInput.value) || 0;
+        const seconds = parseInt(secondsInput.value) || 0;
+        
+        if (seconds >= 60) {
+            secondsInput.value = 59;
+            return minutes * 60 + 59;
+        }
+        
+        return minutes * 60 + seconds;
+    }
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+        if (isRunning) return;
+        
+        totalSeconds = validateInput();
+        if (totalSeconds <= 0) {
+            alert('Please enter a valid time');
+            return;
+        }
+
+        isRunning = true;
+        startButton.disabled = true;
+        minutesInput.disabled = true;
+        secondsInput.disabled = true;
+
+        // Set animation duration
+        hourglass.style.setProperty('--duration', `${totalSeconds}s`);
+        hourglass.classList.add('sand-falling');
+
+        updateDisplay();
+
+        countdown = setInterval(() => {
+            totalSeconds--;
+            updateDisplay();
+
+            if (totalSeconds <= 0) {
+                stopTimer();
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(countdown);
+        isRunning = false;
+        startButton.disabled = false;
+        minutesInput.disabled = false;
+        secondsInput.disabled = false;
+        hourglass.classList.remove('sand-falling');
+    }
+
+    function resetTimer() {
+        stopTimer();
+        totalSeconds = 0;
+        minutesInput.value = '';
+        secondsInput.value = '';
+        timeLeft.textContent = '00:00';
+    }
+
+    function updateDisplay() {
+        timeLeft.textContent = formatTime(totalSeconds);
+    }
+
+    startButton.addEventListener('click', startTimer);
+    resetButton.addEventListener('click', resetTimer);
+
+    // Input validation
+    minutesInput.addEventListener('input', () => {
+        if (minutesInput.value < 0) minutesInput.value = 0;
+    });
+
+    secondsInput.addEventListener('input', () => {
+        if (secondsInput.value < 0) secondsInput.value = 0;
+        if (secondsInput.value > 59) secondsInput.value = 59;
+    });
+});
+
+    </script>
+</body>
+</html>
